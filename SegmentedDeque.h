@@ -319,7 +319,6 @@ public:
 template <typename T>
 class MutableSegmentedDeque : public SegmentedDeque<T> {
 private:
-
     SegmentedDeque<T>* Instance() override {
         return static_cast< SegmentedDeque<T>* >(this);
     }
@@ -350,8 +349,46 @@ public:
         }
         return result;
     }
+};
 
+template <typename T>
+class ImmutableSegmentedDeque : public SegmentedDeque<T> {
+private:
+    ImmutableSegmentedDeque<T>* Clone(){
+        return new ImmutableSegmentedDeque<T>(*this);
+    }
+    SegmentedDeque<T>* Instance() override {
+        return static_cast< SegmentedDeque<T>* >( Clone() );
+    }
+    
+    const SegmentedDeque<T>* Instance() const  override {
+        return static_cast<const SegmentedDeque<T>*>( Clone() );
+    }
 
+public:
+    using SegmentedDeque<T>::SegmentedDeque;
 
-
+    ImmutableSegmentedDeque<T>* Concat( const Sequence <T>& seq) const override {
+        MutableSegmentedDeque<T>* result = new MutableSegmentedDeque<T>(this->GetLength() + seq.GetLength());
+        for(int i=0;i<this->GetLength();i++){
+            result->Set(this->Get(i),i);
+        }
+        for(int i=0;i<seq.GetLength();i++){
+            result->Set(seq.Get(i),i+this->GetLength());
+        }
+        ImmutableSegmentedDeque<T>* res = new ImmutableSegmentedDeque<T>(*result);
+        delete result;
+        return res;
+    } 
+    ImmutableSegmentedDeque<T>*  GetSubsequence(int startIndex, int endIndex) const override{
+        if(startIndex<0||endIndex<startIndex) throw std::invalid_argument("");
+        if(endIndex>=this->size) throw std::out_of_range("");
+        MutableSegmentedDeque<T>* result = new MutableSegmentedDeque<T>(endIndex - startIndex + 1);
+        for(int i = 0 ; i < endIndex-startIndex +1;i++){
+            result->Set(this->Get(startIndex+i),i);
+        }
+        ImmutableSegmentedDeque<T>* res = new ImmutableSegmentedDeque<T>(*result);
+        delete result;
+        return res;
+    }
 };
