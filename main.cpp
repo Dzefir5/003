@@ -57,6 +57,9 @@ int main(){
     std::cout<<std::endl;
     auto deq5 = deq4.GetSubsequence(3,7);
     deq5->PrintDeque();
+    deq5->RemoveAt(2);
+    std::cout<<std::endl;
+    deq5->PrintDeque();
     std::cout<<std::endl;
 
 }

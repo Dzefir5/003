@@ -66,9 +66,7 @@ public:
         }
     }   
     SegmentedDeque(T* items, int inSize):SegmentedDeque(inSize){
-        std::cout<<"1"<<std::endl;
         for(int i =0;i<inSize;i++){
-            std::cout<<i<<std::endl;
             //this->Set(items[i],i);
             (*this)[i] = items[i];
         }
@@ -203,7 +201,7 @@ public:
             result->PopBack();
             return result;
         }
-        for(int i = index ; i<result->size-2;i++){
+        for(int i = index ; i<result->size-1;i++){
             (*result)[i]=(*result)[i+1];
         }
         result->PopBack();
@@ -231,7 +229,6 @@ public:
             result->Append(item);
             return result;
         }
-        std::cout<<"____1"<<std::endl;
         result->Append(item);
         for(int i = result->size-1 ; i>index;i--){
             (*result)[i]=(*result)[i-1];
