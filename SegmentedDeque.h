@@ -15,6 +15,9 @@ public:
     int start=0;
     int end =0;
 
+    
+    
+protected:
     void swap(SegmentedDeque<T>& toSwap){
         MySwap( data,toSwap.data);
         MySwap(chankCount,toSwap.chankCount);
@@ -22,9 +25,6 @@ public:
         MySwap(start,toSwap.start);
         MySwap(end,toSwap.end);
     }
-    
-protected:
-
     virtual SegmentedDeque<T>* Instance() = 0;
     virtual const SegmentedDeque<T>* Instance() const = 0;
     
@@ -73,12 +73,12 @@ public:
     }
     SegmentedDeque(const Sequence<T>& seq):SegmentedDeque(seq.GetLength()){
         for(int i =0;i<seq.GetLength();i++){
-            this->Set(seq.Get(i),i+start);
+            (*this)[i] = seq.Get(i);
         }
     }
     SegmentedDeque(const SegmentedDeque<T>& deq):SegmentedDeque(deq.GetLength()){
         for(int i =0;i<deq.GetLength();i++){
-            this->Set(deq.Get(i),i+start);
+            (*this)[i] = deq.Get(i);
         }
     }
 
@@ -205,18 +205,7 @@ public:
             (*result)[i]=(*result)[i+1];
         }
         result->PopBack();
-        /*
-        SegmentedDeque<T>* res = new SegmentedDeque<T>();
-        for(int i =0;i<index;i++){
-            res->Append(result->Get(i));
-        }
-        for(int i =index+1;i<result->GetLength();i++){
-            res->Append(result->Get(i));
-        }
-        result->swap(*res);
-        delete res;
-        */
-
+        
         return result;
     }
     SegmentedDeque<T>* InsertAt(const T& item , int index) override {
@@ -236,27 +225,13 @@ public:
         (*result)[index] = item;
         
 
-        /*
-        SegmentedDeque<T>* res = new SegmentedDeque<T>();
-        for(int i =0;i<index;i++){
-            res->Append(result->Get(i));
-            std::cout<<"get:"<<result->Get(i) <<std::endl;
-        }
-        res->Append(item);
-        for(int i =index;i<result->GetLength();i++){
-            res->Append(result->Get(i));
-        }
-        result->swap(*res);
-        delete res;
-        */
-
         return result;
     }
 
 
     void PrintDeque() const {
         if(chankCount ==1){
-            for(int i = start ; i<=end; i ++){
+            for(int i = 0 ; i < chankSize; i ++){
                 if(i<start||i>end){
                     std::cout<<"-"<<" ";
                 }else{
@@ -292,6 +267,9 @@ public:
         return;
     }
 
+    bool IsEmpty(){
+        return size==0;
+    }
 
     T& operator[](int index) override {
         if(index<0||index>=size) 
@@ -331,12 +309,9 @@ public:
     using SegmentedDeque<T>::SegmentedDeque;
 
     MutableSegmentedDeque<T>* Concat( const Sequence <T>& seq) const override {
-        MutableSegmentedDeque<T>* result = new MutableSegmentedDeque<T>(this->GetLength() + seq.GetLength());
-        for(int i=0;i<this->GetLength();i++){
-            result->Set(this->Get(i),i);
-        }
+        MutableSegmentedDeque<T>* result = new MutableSegmentedDeque<T>(*this);
         for(int i=0;i<seq.GetLength();i++){
-            result->Set(seq.Get(i),i+this->GetLength());
+            result->Append(seq.Get(i));
         }
         return result;
     } 
@@ -349,12 +324,66 @@ public:
         }
         return result;
     }
+
+    MutableSegmentedDeque<T>* Slice(int index, int offset , const Sequence<T> &seq ) override {
+       MutableSegmentedDeque<T>* result = new MutableSegmentedDeque<T>(*this);
+        
+        if( MyAbs(index)>result->GetLength()) throw std::invalid_argument("");
+        int start =0 ;
+        if(index<0) { start =result->GetLength() + index;  } else { start = index; }
+        int i =start;
+        for( ; i< std::min(result->GetLength() ,  start+seq.GetLength() );i++) {
+            result->Set(seq.Get(i-start),i);
+        }   
+        int removeCount =0;
+        
+        for( ;(i< std::min(result->GetLength() , start+offset ) ) && ( removeCount<offset-seq.GetLength() );removeCount++){
+            result->RemoveAt(i);
+        }
+        return result;
+    }
+    Sequence<  Sequence<T>* >* Split( bool (*func)(T input) ) const  {
+        MutableSegmentedDeque< Sequence<T>* >* result = new MutableSegmentedDeque< Sequence<T>* >();
+        MutableSegmentedDeque<T>* buf = new MutableSegmentedDeque<T>();
+        for(int i = 0 ; i<this->GetLength();i++){
+            buf->Append(this->Get(i));
+            if( (*func)(this->Get(i)) == true){
+                result->Append(buf);
+                buf = new MutableSegmentedDeque<T>();
+            } 
+        }
+        result->Append(buf);
+        return result;
+    }
+    MutableSegmentedDeque<T>& operator=(const Sequence<T> &seq){
+        MutableSegmentedDeque<T> result (seq);
+        swap(*this,result);
+        return *this
+        
+    }
+
+    MutableSegmentedDeque<T>& operator+=(const Sequence<T> &seq){
+        for(int i=0;i<seq.GetLength();i++){
+            this->Append(seq.Get(i));
+        }
+        return *this;
+    }
 };
+template <typename T>
+MutableSegmentedDeque<T>& operator+(const Sequence<T> &seq1,const Sequence<T> &seq2){
+    MutableSegmentedDeque<T>* result = new  MutableSegmentedDeque<T>(seq1);
+    (*result)+=seq2;
+    return *result;
+}
+
 
 template <typename T>
 class ImmutableSegmentedDeque : public SegmentedDeque<T> {
 private:
     ImmutableSegmentedDeque<T>* Clone(){
+        return new ImmutableSegmentedDeque<T>(*this);
+    }
+    ImmutableSegmentedDeque<T>* Clone() const{
         return new ImmutableSegmentedDeque<T>(*this);
     }
     SegmentedDeque<T>* Instance() override {
@@ -391,4 +420,46 @@ public:
         delete result;
         return res;
     }
+
+    ImmutableSegmentedDeque<T>* Slice(int index, int offset , const Sequence<T> &seq ) override {
+        MutableSegmentedDeque<T>* result = new MutableSegmentedDeque<T>(*this);
+        if( MyAbs(index)>result->GetLength()) throw std::invalid_argument("");
+        int start =0 ;
+        if(index<0) { start =result->GetLength() + index;  } else { start = index; }
+        int i =start;
+        for( ; i< std::min(result->GetLength() ,  start+seq.GetLength() );i++) {
+            result->Set(seq.Get(i-start),i);
+        }   
+        int removeCount =0;
+        
+        for( ;(i< std::min(result->GetLength() , start+offset ) ) && ( removeCount<offset-seq.GetLength() );removeCount++){
+            result->RemoveAt(i);
+        }
+        ImmutableSegmentedDeque<T>* res = new ImmutableSegmentedDeque<T>(*result);
+        delete result;
+        return res;
+    }
+
+    Sequence<  Sequence<T>* >* Split( bool (*func)(T input) ) const  {
+        MutableSegmentedDeque< Sequence<T>* >* result = new MutableSegmentedDeque< Sequence<T>* >();
+        MutableSegmentedDeque<T>* buf = new MutableSegmentedDeque<T>();
+        for(int i = 0 ; i<this->GetLength();i++){
+            buf->Append(this->Get(i));
+            if( (*func)(this->Get(i)) == true){
+                result->Append(buf);
+                buf = new MutableSegmentedDeque<T>();
+            } 
+        }
+        result->Append(buf);
+        ImmutableSegmentedDeque< Sequence<T>* >* finalresult = new ImmutableSegmentedDeque< Sequence<T>* >(*result);
+        delete result;
+        return finalresult;
+    }
+
+    ImmutableSegmentedDeque<T>& operator=(const Sequence<T> &seq){
+        ImmutableSegmentedDeque<T> result (seq);
+        swap(*this,result);
+        return *this
+    }
+
 };

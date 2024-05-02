@@ -1,12 +1,11 @@
 #pragma once
-#include "ListSequence.h"
-#include "ArraySequence.h"
+#include "SegmentedDeque.h"
 #include "MyTuple.h"
 
 
 template <typename T,typename U,typename ... Types>
 Sequence<U>& map(const Sequence<T>& seq, U (*func)( T, Types& ...),Types&...tail){
-    MutableArraySequence<U>* result = new MutableArraySequence<U>(seq.GetLength());
+    MutableSegmentedDeque<U>* result = new MutableSegmentedDeque<U>(seq.GetLength());
     for(int i =0;i<seq.GetLength();i++){
         (*result)[i]=(*func)(seq.Get(i),tail...);
     }
@@ -16,7 +15,7 @@ Sequence<U>& map(const Sequence<T>& seq, U (*func)( T, Types& ...),Types&...tail
 
 template <typename T,typename ... Types>
 Sequence<T>& where(const Sequence<T>& seq, bool (*func)( T ,Types& ...),Types&...tail){
-    MutableArraySequence<T>* result = new MutableArraySequence<T>();
+    MutableSegmentedDeque<T>* result = new MutableSegmentedDeque<T>();
     for(int i =0;i<seq.GetLength();i++){
         if((*func)(seq.Get(i), tail...)==true){
             result->Append(seq.Get(i));
@@ -59,16 +58,7 @@ int findMinLength(const Types& ... args){
     return seqMinSize;
 }
 
-                //Пока не нужна , переделать через sizeof хвоста
-/*int getArgsSize(int& counter ){ return counter;}
 
-template <typename T,typename ... Types>
-int getArgsSize(int& counter ,T first ,Types ... args){
-    getArgsSize(counter ,args...);
-    counter++;
-    return counter;
-}
-*/
                                
 template <size_t I=0 , typename ... TypeForTuple,typename ... Types> 
 void zipTupleHelper(size_t& counter ,int& index, Tuple_<TypeForTuple...>& inTuple,const Types& ... args){}
@@ -82,10 +72,10 @@ void zipTupleHelper(size_t& counter ,int& index, Tuple_<TypeForTuple...>& inTupl
 }
                     // попытаться сделать самостоятельное определение типов
 template <typename ... TypeForTuple,typename ... Types> 
-MutableArraySequence< Tuple_< TypeForTuple... > >& zip(const Types& ... args ){
+MutableSegmentedDeque< Tuple_< TypeForTuple... > >& zip(const Types& ... args ){
     //реализовать поиск меньшего массива
     int seqSize = findMinLength(args...);
-    MutableArraySequence< Tuple_<TypeForTuple ... > >* result = new MutableArraySequence< Tuple_<TypeForTuple ... > >(seqSize);
+    MutableSegmentedDeque< Tuple_<TypeForTuple ... > >* result = new MutableSegmentedDeque< Tuple_<TypeForTuple ... > >(seqSize);
     for(int i =0; i< seqSize;i++){ 
         Tuple_<TypeForTuple...>* buf =  new Tuple_<TypeForTuple...> ;
         size_t counter =0;
@@ -99,9 +89,9 @@ MutableArraySequence< Tuple_< TypeForTuple... > >& zip(const Types& ... args ){
 
 
 template <size_t I=0,typename First,typename ... TypeForTuple> 
-void unzipTupleHelper(size_t& counter,int& length,Tuple_< MutableArraySequence<TypeForTuple>*...>& inTuple,Sequence< Tuple_< TypeForTuple... > >& toUnzip)
+void unzipTupleHelper(size_t& counter,int& length,Tuple_< MutableSegmentedDeque<TypeForTuple>*...>& inTuple,Sequence< Tuple_< TypeForTuple... > >& toUnzip)
 {
-    MutableArraySequence<First>* buf  = new MutableArraySequence<First>(length);
+    MutableSegmentedDeque<First>* buf  = new MutableSegmentedDeque<First>(length);
     Get<I>(inTuple) = buf;
     for(int i =0;i<length ;i++){
         buf->Set(Get<I>(toUnzip[i]),i);
@@ -111,9 +101,9 @@ void unzipTupleHelper(size_t& counter,int& length,Tuple_< MutableArraySequence<T
 }
 
 template <size_t I=0 ,typename First,typename Second,typename ... Types,typename ... TypeForTuple> 
-void unzipTupleHelper(size_t& counter,int& length,Tuple_< MutableArraySequence<TypeForTuple>*...>& inTuple,Sequence< Tuple_< TypeForTuple... > >& toUnzip)
+void unzipTupleHelper(size_t& counter,int& length,Tuple_< MutableSegmentedDeque<TypeForTuple>*...>& inTuple,Sequence< Tuple_< TypeForTuple... > >& toUnzip)
 {
-    MutableArraySequence<First>* buf  = new MutableArraySequence<First>(length);
+    MutableSegmentedDeque<First>* buf  = new MutableSegmentedDeque<First>(length);
     Get<I>(inTuple) = buf;
     for(int i =0;i<length ;i++){
         buf->Set(Get<I>(toUnzip[i]),i);
@@ -123,8 +113,8 @@ void unzipTupleHelper(size_t& counter,int& length,Tuple_< MutableArraySequence<T
 }
 
 template <typename ... TypeForTuple> 
-Tuple_< MutableArraySequence<TypeForTuple>*...>&  unzip(Sequence< Tuple_< TypeForTuple... > >& toUnzip){
-    Tuple_< MutableArraySequence<TypeForTuple>*...>* result = new Tuple_< MutableArraySequence<TypeForTuple>*...>;
+Tuple_< MutableSegmentedDeque<TypeForTuple>*...>&  unzip(Sequence< Tuple_< TypeForTuple... > >& toUnzip){
+    Tuple_< MutableSegmentedDeque<TypeForTuple>*...>* result = new Tuple_< MutableSegmentedDeque<TypeForTuple>*...>;
     int seqLength = toUnzip.GetLength();
     size_t counter=0;
     unzipTupleHelper<0,TypeForTuple...>(counter,seqLength,*result,toUnzip);

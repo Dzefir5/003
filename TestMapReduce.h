@@ -16,8 +16,8 @@ int testFuncReduce(int a,int b ){
 void Test_Where(){
     int a[4]={1,2,3,4};
     int b[]={2,4};
-    MutableListSequence<int> testWhere(a,4);
-    MutableArraySequence<int> whereResult = where(testWhere,&testFuncWhere);
+    MutableSegmentedDeque<int> testWhere(a,4);
+    MutableSegmentedDeque<int> whereResult = where(testWhere,&testFuncWhere);
     for(int i=0;i<whereResult.GetLength();i++){
         assert ( whereResult.Get(i)==b[i]  );
     }
@@ -25,8 +25,8 @@ void Test_Where(){
 void Test_Map(){
     int a[]={1,2,3,4};
     int b[]={5,10,15,20};
-    MutableListSequence<int> testMap(a,4);
-    MutableArraySequence<int> mapResult = map(testMap,&testFuncMap);
+    MutableSegmentedDeque<int> testMap(a,4);
+    MutableSegmentedDeque<int> mapResult = map(testMap,&testFuncMap);
     for(int i=0;i<mapResult.GetLength();i++){
         assert ( mapResult.Get(i)==b[i]  );
     }
@@ -34,7 +34,7 @@ void Test_Map(){
 void Test_Reduce(){
     int a[]={1,2,3,4};
     int res=10;
-    MutableListSequence<int> testReduce(a,4);
+    MutableSegmentedDeque<int> testReduce(a,4);
     int start =0;
     int result = reduce(testReduce,&testFuncReduce,start);
     assert(result==res);
@@ -50,9 +50,9 @@ void Test_ZipUnzip(){
         {3,'c',9.6}
     };
 
-    MutableArraySequence<int> test_1(a,4);
-    MutableArraySequence<char> test_2(b,5);
-    MutableArraySequence<double> test_3(c,3);
+    MutableSegmentedDeque<int> test_1(a,4);
+    MutableSegmentedDeque<char> test_2(b,5);
+    MutableSegmentedDeque<double> test_3(c,3);
     auto testZip =  zip<int,char,double>(test_1,test_2,test_3) ;
     for(int i =0; i<testZip.GetLength();i++){
         assert( Get<0>(res[i])==Get<0>(testZip[i]) ); 

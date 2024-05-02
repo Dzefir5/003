@@ -1,16 +1,23 @@
 
 #include "Sequence.h"
 #include "SegmentedDeque.h"
-
+#include "Testing.h"
 
 
 int main(){
+    Test_DynamicArray();
+    Test_MapReduce();
+    Test_SegmentedDeque();
+
     int a[10] = {1,2,3,4,5,6,7,8,9,10};
     std::cout<<"___"<<std::endl;
     MutableSegmentedDeque<int> deq (a, 10);
     std::cout <<deq.chankCount<<std::endl;
     std::cout <<deq.start<<std::endl;
     std::cout <<deq.end<<std::endl;
+    deq.PrintSequence();
+    std::cout<<std::endl;
+    deq.Set(55,3);
     deq.PrintSequence();
     std::cout<<std::endl;
     deq.Append(11);
@@ -61,5 +68,70 @@ int main(){
     std::cout<<std::endl;
     deq5->PrintDeque();
     std::cout<<std::endl;
+
+    std::cout<<std::endl;
+    std::cout<<"CONSTRUCTORS"<<std::endl;
+    int dd[10] = {1,2,3,4,5,6,7,8,9,10};
+    std::cout<<"___"<<std::endl;
+    MutableSegmentedDeque<int> Deq1 (dd, 10);
+    Deq1.PrintDeque();
+    MutableSegmentedDeque<int> Deq2(Deq1);
+    Deq2.PrintDeque();
+
+    std::cout<<std::endl;
+    std::cout<<"SPLIT MUTABLE ARRAY SEQUENCE"<<std::endl;
+    int e[]={1,2,3,4,5,6};
+    MutableSegmentedDeque<int> testSplit1 (e,6);
+    std::cout<<"Sequence до разделения : ";
+    testSplit1.PrintDeque();
+    std::cout<<std::endl;
+    auto func { [](int i){ return i==3;  }};
+    auto splitResult1 = testSplit1.Split(func);
+    std::cout<<"Результат разделения по элементам кратным 3 : "<<std::endl;
+    for(int i=0;i<splitResult1->GetLength();i++){
+        splitResult1->Get(i)->PrintSequence();
+        std::cout<<std::endl;
+    }
+    for(int i=0;i<splitResult1->GetLength();i++){
+        static_cast<MutableSegmentedDeque<int>*>(splitResult1->Get(i))->PrintDeque();
+        std::cout<<std::endl;
+    }
+    
+
+    std::cout<<std::endl;
+    std::cout<<"SLICE MUTABLE ARRAY SEQUENCE"<<std::endl;
+    MutableSegmentedDeque<int> testArraySlice(2,6);
+    MutableSegmentedDeque<int> testArraySliceAdd(6,2);
+    std::cout<<"Sequence до slice : ";
+    testArraySlice.PrintDeque();
+    std::cout<<std::endl;
+    std::cout<<"Sequence для slice : ";
+    testArraySliceAdd.PrintDeque();
+    std::cout<<std::endl;
+
+    std::cout<<"Результат после slice начиная с индекса 2, длинною 3: ";
+    auto testArraySliceResult1 = testArraySlice.Slice(2,3,testArraySliceAdd);
+    testArraySliceResult1->PrintDeque();
+    std::cout<<std::endl<<std::endl;
+
+    std::cout<<"___"<<std::endl;
+    int f[10] = {1,2,3,4,5,6,7,8,9,10};
+    MutableSegmentedDeque<int> Deqq1 (f, 10);
+    Deqq1.PrintDeque();
+    std::cout<<std::endl;
+    MutableSegmentedDeque<int> Deqq2  = Deqq1;
+    Deqq2.PrintDeque();
+    std::cout<<std::endl;
+    std::cout<<"___"<<std::endl;
+    Deqq1+=Deqq2;
+    std::cout<<"___"<<std::endl;
+    Deqq1.PrintDeque();
+    std::cout<<"___"<<std::endl;
+    std::cout<<std::endl;
+    MutableSegmentedDeque<int> Deqq3 = Deqq1+ Deqq2;
+    Deqq3.PrintDeque();
+
+
+
 
 }

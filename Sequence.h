@@ -16,6 +16,8 @@ public:
     virtual Sequence<T>*  InsertAt( const T& item, int index )=0;
     virtual Sequence<T>*  RemoveAt( int index )=0;
     virtual Sequence<T>* Concat( const Sequence<T> &seq ) const = 0; 
+    virtual Sequence<T>* Slice(int index, int offset , const Sequence<T> &seq )  = 0; 
+
     
     virtual T& operator[](int index) = 0 ;
 
