@@ -4,10 +4,9 @@
 #include "Testing.h"
 #include "UIDemonstration.h"
 
+//clang++ main.cpp -Wall -Wextra -o main.exe
+
 int main(){
-    Test_DynamicArray();
-    Test_MapReduce();
-    Test_SegmentedDeque();
     /*
     int a[10] = {1,2,3,4,5,6,7,8,9,10};
     std::cout<<"___"<<std::endl;
@@ -127,6 +126,9 @@ int main(){
     MutableSegmentedDeque<int> Deqq3 = Deqq1+ Deqq2;
     PrintDeque(Deqq3);
     */
+    Test_DynamicArray();
+    Test_MapReduce();
+    Test_SegmentedDeque();
     demonstartionMapReduce();
     demonstrateMutableSegmentedDeque();
 
