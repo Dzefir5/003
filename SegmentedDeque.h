@@ -229,43 +229,7 @@ public:
     }
 
 
-    void PrintDeque() const {
-        if(chankCount ==1){
-            for(int i = 0 ; i < chankSize; i ++){
-                if(i<start||i>end){
-                    std::cout<<"-"<<" ";
-                }else{
-                    std::cout<<(*data)[0][i]<<" ";
-                }
-            }
-            return;
-        }
-        for(int i = 0 ; i<chankSize; i ++){
-            if(i<start){
-                std::cout<<"-"<<" ";
-            }else{
-                std::cout<<(*data)[0][i]<<" ";
-            }
-        }
-        std::cout<<std::endl;
-        for(int i  = 0 ; i<chankCount-2;i++){
-            for(int j = 0 ;j<chankSize;j++){
-                std::cout<<(*data)[i+1][j]<<" ";
-            }
-            std::cout<<std::endl;
-        }
-        for(int i = 0 ; i<chankSize; i ++){
-            if(i>end){
-                std::cout<<"-"<<" ";
-            }else{
-                std::cout<<(*data)[chankCount-1][i]<<" ";
-            }
-        }
-        std::cout<<std::endl;
-        std::cout<<"size : "<<size<< " chanks : "<<chankCount<<std::endl;
-        std::cout<<"start index : "<<start<< " end index : "<<end<<std::endl;
-        return;
-    }
+
 
     bool IsEmpty(){
         return size==0;
@@ -292,7 +256,62 @@ public:
     }
 };
 
-
+template <typename T>
+void PrintDeque(const SegmentedDeque<T>& deq) {
+        std::cout<<"------------------"<<std::endl;
+        std::cout<<"Start index : "<<deq.start<<std::endl<<"End index : "<<deq.end<<std::endl;
+        std::cout<<"------------------"<<std::endl;
+        std::cout<<"Indexes :";
+        for(int i =0 ;i<deq.chankSize;i++){
+            std::cout<<" "<<i;
+        }
+        std::cout<<std::endl;
+        std::cout<<"------------------"<<std::endl;
+        std::cout<<"Chank " << 1 <<" : ";
+        if(deq.chankCount ==1){
+            for(int i = 0 ; i < deq.chankSize; i ++){
+                if(i<deq.start||i>deq.end){
+                    std::cout<<"_"<<" ";
+                }else{
+                    std::cout<<(*(deq.data))[0][i]<<" ";
+                }
+            }
+            std::cout<<std::endl;
+            std::cout<<"------------------"<<std::endl;
+            return;
+        }
+        for(int i = 0 ; i<deq.chankSize; i ++){
+            if(i<deq.start){
+                std::cout<<"_"<<" ";
+            }else{
+                std::cout<<(*(deq.data))[0][i]<<" ";
+            }
+        }
+        std::cout<<std::endl;
+        for(int i  = 0 ; i<deq.chankCount-2;i++){
+            std::cout<<"Chank " << i+2 <<" : ";
+            for(int j = 0 ;j<deq.chankSize;j++){
+                std::cout<<(*(deq.data))[i+1][j]<<" ";
+            }
+            std::cout<<std::endl;
+        }
+        std::cout<<"Chank " << deq.chankCount <<" : ";
+        for(int i = 0 ; i<deq.chankSize; i ++){
+            if(i>deq.end){
+                std::cout<<"_"<<" ";
+            }else{
+                std::cout<<(*(deq.data))[deq.chankCount-1][i]<<" ";
+            }
+        }
+        std::cout<<std::endl;
+        std::cout<<"------------------"<<std::endl;
+        std::cout<<"Deque size  : "<<deq.size<<std::endl;
+        std::cout<<"Chank count : "<<deq.chankCount<<std::endl;
+        std::cout<<"Chank size  : "<<deq.chankSize<<std::endl;
+        std::cout<<"Deque capacity : "<<deq.chankCount*deq.chankSize<<std::endl;
+        std::cout<<"------------------"<<std::endl;
+        return;
+    }
 
 template <typename T>
 class MutableSegmentedDeque : public SegmentedDeque<T> {
