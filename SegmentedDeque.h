@@ -2,6 +2,8 @@
 
 #include "Sequence.h"
 #include "DynamicArray.h"
+#include "MySwap.h"
+
 #include <iostream>
 
 
