@@ -17,8 +17,7 @@ public:
     int start=0;
     int end =0;
 
-    
-    
+
 protected:
     void swap(SegmentedDeque<T>& toSwap){
         MySwap( data,toSwap.data);
@@ -51,16 +50,18 @@ public:
             start = (chankSize - inSize)/2;
             end = start + inSize - 1;
         }
-        if(chankCount ==2){
+        if(chankCount >=2){
             startOffset = inSize/2;
             start = chankSize - startOffset ;
             end = inSize - startOffset - 1 ;
         }
+        /*
         if(chankCount >= 3){
             startOffset  = (inSize - (chankCount-2)*chankSize)/2;
             start = chankSize - startOffset ;
             end = inSize - (chankCount-2)*chankSize - startOffset -1 ;
         }
+        */
     }   
     SegmentedDeque(const T& fillElem , int inSize):SegmentedDeque(inSize){
         for(int i =0;i<inSize;i++){
@@ -230,9 +231,6 @@ public:
         return result;
     }
 
-
-
-
     bool IsEmpty(){
         return size==0;
     }
@@ -263,19 +261,13 @@ void PrintDeque(const SegmentedDeque<T>& deq) {
         std::cout<<"------------------"<<std::endl;
         std::cout<<"Start index : "<<deq.start<<std::endl<<"End index : "<<deq.end<<std::endl;
         std::cout<<"------------------"<<std::endl;
-        std::cout<<"Indexes :";
-        for(int i =0 ;i<deq.chankSize;i++){
-            std::cout<<" "<<i;
-        }
-        std::cout<<std::endl;
-        std::cout<<"------------------"<<std::endl;
         std::cout<<"Chank " << 1 <<" : ";
         if(deq.chankCount ==1){
             for(int i = 0 ; i < deq.chankSize; i ++){
                 if(i<deq.start||i>deq.end){
-                    std::cout<<"_"<<" ";
+                    std::cout<<"[_]"<<" ";
                 }else{
-                    std::cout<<(*(deq.data))[0][i]<<" ";
+                    std::cout<<"["<<(*(deq.data))[0][i]<<"] ";
                 }
             }
             std::cout<<std::endl;
@@ -284,25 +276,25 @@ void PrintDeque(const SegmentedDeque<T>& deq) {
         }
         for(int i = 0 ; i<deq.chankSize; i ++){
             if(i<deq.start){
-                std::cout<<"_"<<" ";
+                std::cout<<"[_]"<<" ";
             }else{
-                std::cout<<(*(deq.data))[0][i]<<" ";
+                std::cout<<"["<<(*(deq.data))[0][i]<<"] ";
             }
         }
         std::cout<<std::endl;
         for(int i  = 0 ; i<deq.chankCount-2;i++){
             std::cout<<"Chank " << i+2 <<" : ";
             for(int j = 0 ;j<deq.chankSize;j++){
-                std::cout<<(*(deq.data))[i+1][j]<<" ";
+                std::cout<<"["<<(*(deq.data))[i+1][j]<<"] ";
             }
             std::cout<<std::endl;
         }
         std::cout<<"Chank " << deq.chankCount <<" : ";
         for(int i = 0 ; i<deq.chankSize; i ++){
             if(i>deq.end){
-                std::cout<<"_"<<" ";
+                std::cout<<"[_]"<<" ";
             }else{
-                std::cout<<(*(deq.data))[deq.chankCount-1][i]<<" ";
+                std::cout<<"["<<(*(deq.data))[deq.chankCount-1][i]<<"] ";
             }
         }
         std::cout<<std::endl;
@@ -363,17 +355,22 @@ public:
         }
         return result;
     }
-    Sequence<  Sequence<T>* >* Split( bool (*func)(T input) ) const  {
-        MutableSegmentedDeque< Sequence<T>* >* result = new MutableSegmentedDeque< Sequence<T>* >();
+     MutableSegmentedDeque<   MutableSegmentedDeque<T>* >* Split( bool (*func)(T input) ) const  {
+        MutableSegmentedDeque<  MutableSegmentedDeque<T>* >* result = new MutableSegmentedDeque<  MutableSegmentedDeque<T>* >();
         MutableSegmentedDeque<T>* buf = new MutableSegmentedDeque<T>();
         for(int i = 0 ; i<this->GetLength();i++){
             buf->Append(this->Get(i));
             if( (*func)(this->Get(i)) == true){
                 result->Append(buf);
-                buf = new MutableSegmentedDeque<T>();
+                if(i!=this->GetLength()-1){
+                    buf = new MutableSegmentedDeque<T>();  
+                }
+                
             } 
         }
-        result->Append(buf);
+        if(buf->GetLength()!=0){
+            result->Append(buf);  
+        }
         return result;
     }
     MutableSegmentedDeque<T>& operator=(const Sequence<T> &seq){

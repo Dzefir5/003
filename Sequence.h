@@ -43,4 +43,14 @@ public:
         return true;
     }
 };
+template <typename T> 
+void PrintSeq(Sequence<T>& seq) {
+    if(seq.GetLength() == 0){
+        std::cout<<"Empty";
+        return ;
+    }
+    for(int i =0;i<seq.GetLength();i++){
+        std::cout<<seq.Get(i)<<" ";
+    }
+}
 
